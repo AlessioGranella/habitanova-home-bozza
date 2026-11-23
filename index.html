@@ -1,0 +1,620 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HabitaNova — Immobili a Iglesias e nel Sulcis Iglesiente</title>
+<meta name="description" content="HabitaNova, agenzia immobiliare a Iglesias. Case in vendita a Iglesias, Carloforte, Calasetta, Sant'Antioco e nel Sulcis Iglesiente.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="assets/logo/HabitaNova_pittogramma_oro.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,300;6..12,400;6..12,600;6..12,800;6..12,900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+:root{
+  --blu:#00142E; --oro:#D9C584; --sabbia:#F9EAAE; --azzurro:#80ABC9; --bianco:#fff;
+  --blu-80:#334356; --blu-60:#66727F; --blu-40:#99A1AB; --blu-20:#CCD0D5; --blu-10:#E6E8EB; --blu-05:#F2F3F5;
+  --oro-30:#F4EEDA; --oro-15:#FAF6EC;
+  --font:"Avenir","Avenir Next","Nunito Sans",system-ui,sans-serif;
+  --gut:clamp(16px,4vw,56px); --r:24px;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+html.lenis,html.lenis body{height:auto}
+.lenis.lenis-smooth{scroll-behavior:auto!important}
+body{font-family:var(--font);color:var(--blu);background:var(--bianco);font-size:18px;line-height:1.55;overflow-x:hidden}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button,select,input{font:inherit;color:inherit}
+.wrap{max-width:1440px;margin:0 auto;padding:0 var(--gut)}
+.kick{font-size:13px;letter-spacing:.24em;text-transform:uppercase;font-weight:600;color:var(--blu-60);display:flex;align-items:center;gap:14px}
+.kick:before{content:"";width:36px;height:1px;background:currentColor}
+.dark .kick,.hero .kick{color:var(--oro)}
+h2.t{font-size:clamp(34px,4.6vw,64px);line-height:1.04;font-weight:900;letter-spacing:-.02em;margin-top:18px}
+.btn{display:inline-flex;align-items:center;gap:12px;border:0;cursor:pointer;border-radius:999px;font-weight:800;font-size:16px;padding:15px 24px;transition:transform .4s var(--ease),background .3s}
+.btn:hover{transform:translateY(-2px)}
+.btn-blu{background:var(--blu);color:#fff}
+.btn-oro{background:var(--oro);color:var(--blu)}
+.btn i{width:8px;height:8px;border-radius:50%;background:var(--oro);display:block}
+.btn-oro i{background:var(--blu)}
+.line{overflow:hidden;display:block;padding-bottom:.06em}
+.line>span{display:inline-block;will-change:transform}
+
+/* NAV */
+.nav{position:fixed;inset:0 0 auto;z-index:50;transition:background .4s,box-shadow .4s,transform .5s var(--ease)}
+.nav .in{height:84px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.nav .logo{position:relative;height:30px;width:172px}
+.nav .logo img{position:absolute;inset:0;height:100%;width:auto;transition:opacity .4s}
+.nav .logo .b{opacity:0}
+.nav .links{display:flex;gap:36px;font-size:16px;font-weight:600;color:#fff;transition:color .4s}
+.nav .links a{position:relative;padding:4px 0}
+.nav .links a:after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;background:var(--oro);transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease)}
+.nav .links a:hover:after{transform:scaleX(1)}
+.nav.solid{background:rgba(255,255,255,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 1px 0 var(--blu-10)}
+.nav.solid .logo .w{opacity:0}.nav.solid .logo .b{opacity:1}
+.nav.solid .links{color:var(--blu)}
+.nav.hide{transform:translateY(-100%)}
+.burger{display:none;width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.15);cursor:pointer;place-items:center}
+.burger span{display:block;width:18px;height:2px;background:#fff;box-shadow:0 6px 0 #fff,0 -6px 0 #fff}
+.nav.solid .burger{background:var(--blu-05)}
+.mmenu{position:fixed;inset:0;z-index:60;background:var(--blu);color:#fff;display:flex;flex-direction:column;justify-content:center;gap:10px;padding:0 var(--gut);clip-path:circle(0 at calc(100% - 40px) 42px);transition:clip-path .7s var(--ease)}
+.mmenu.on{clip-path:circle(150% at calc(100% - 40px) 42px)}
+.mmenu a{font-size:40px;font-weight:900;letter-spacing:-.02em}
+.mmenu .x{position:absolute;right:var(--gut);top:20px;width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:none;color:#fff;font-size:22px;cursor:pointer}
+.mmenu .btn{margin-top:24px;align-self:flex-start;font-size:16px}
+.nav.solid .burger span{background:var(--blu);box-shadow:0 6px 0 var(--blu),0 -6px 0 var(--blu)}
+
+/* HERO */
+.hero{height:100svh;min-height:640px;padding:12px;position:relative}
+.hero .frame{position:relative;height:100%;border-radius:28px;overflow:hidden;background:var(--blu)}
+.hero .bg{position:absolute;inset:0;background:url(assets/foto/hero.jpg) center 60%/cover;will-change:transform}
+.hero .frame:before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(0,20,46,.86) 0%,rgba(0,20,46,.5) 45%,rgba(0,20,46,.05) 75%),linear-gradient(0deg,rgba(0,20,46,.55),rgba(0,20,46,0) 40%)}
+.hero .txt{position:absolute;z-index:2;left:var(--gut);right:var(--gut);top:clamp(120px,20vh,200px);color:#fff;max-width:780px}
+.hero h1{font-size:clamp(44px,7vw,104px);line-height:.98;font-weight:900;letter-spacing:-.03em;margin-top:24px}
+.hero p.sub{font-size:clamp(17px,1.5vw,21px);margin-top:26px;max-width:520px;opacity:.9}
+.count{position:absolute;z-index:2;right:var(--gut);top:clamp(120px,20vh,200px);background:rgba(0,20,46,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(217,197,132,.35);color:#fff;border-radius:18px;padding:18px 22px;font-size:14px}
+.count b{display:block;font-size:38px;line-height:1;font-weight:900;color:var(--oro);margin-bottom:4px}
+.search{position:absolute;z-index:3;left:var(--gut);right:var(--gut);bottom:var(--gut);background:#fff;border-radius:20px;padding:10px 10px 10px 28px;display:flex;align-items:stretch;box-shadow:0 24px 60px rgba(0,20,46,.3);max-width:1328px;margin:0 auto}
+.search label{flex:1;padding:8px 22px;border-right:1px solid var(--blu-10);display:flex;flex-direction:column;justify-content:center;min-width:0;cursor:pointer}
+.search label:first-child{padding-left:0}
+.search label:nth-last-of-type(1){border:0}
+.search b{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--blu-60);font-weight:800}
+.search select{border:0;background:none;font-size:18px;font-weight:600;padding:4px 0;cursor:pointer;outline:0;appearance:none;-webkit-appearance:none;width:100%}
+.search .go{border-radius:14px;padding:0 32px;font-size:17px;margin-left:12px}
+.scrollhint{position:absolute;z-index:2;left:50%;bottom:-40px;width:1px;height:60px;background:linear-gradient(var(--oro),transparent)}
+
+/* MANIFESTO */
+.manifesto{padding:clamp(100px,16vw,220px) 0 clamp(80px,12vw,160px)}
+.manifesto .big{font-size:clamp(28px,3.6vw,54px);line-height:1.22;font-weight:300;letter-spacing:-.01em;margin-top:34px;max-width:1240px}
+.manifesto .big .w{opacity:.14;transition:none}
+.manifesto .big strong{font-weight:900}
+.manifesto .by{margin-top:36px;font-size:15px;color:var(--blu-60);letter-spacing:.06em}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:clamp(60px,8vw,110px);border-top:1px solid var(--blu-10)}
+.stats div{padding-top:28px}
+.stats b{display:block;font-size:clamp(48px,6vw,88px);line-height:1;font-weight:900;letter-spacing:-.03em}
+.stats b sup{font-size:.45em;color:var(--oro);vertical-align:.9em;margin-left:4px}
+.stats div>span{display:block;margin-top:10px;color:var(--blu-60);font-size:16px}
+
+/* MAPPA */
+.mappa{background:var(--blu-05);padding:clamp(80px,10vw,140px) 0 clamp(60px,8vw,100px);border-radius:40px 40px 0 0}
+.mhead{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;flex-wrap:wrap}
+.mhead p{max-width:440px;color:var(--blu-60)}
+.filters{margin-top:40px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.chip{border:1px solid var(--blu-20);background:#fff;border-radius:999px;padding:10px 18px;font-size:15px;font-weight:600;cursor:pointer;transition:all .3s var(--ease)}
+.chip:hover{border-color:var(--blu)}
+.chip.on{background:var(--blu);border-color:var(--blu);color:#fff}
+.chip.on em{color:var(--oro)}
+.chip em{font-style:normal;color:var(--blu-40);margin-left:6px;font-weight:800}
+.fsel{display:flex;gap:12px;margin-left:auto;flex-wrap:wrap}
+.fsel select{border:1px solid var(--blu-20);background:#fff;border-radius:999px;padding:10px 38px 10px 18px;font-size:15px;font-weight:600;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%2300142E' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center}
+.board{margin-top:28px;display:grid;grid-template-columns:minmax(360px,5fr) 7fr;gap:20px;height:min(76vh,760px)}
+.list{overflow-y:auto;padding-right:8px;display:flex;flex-direction:column;gap:14px;scrollbar-width:thin;scrollbar-color:var(--blu-20) transparent}
+.res{font-size:15px;color:var(--blu-60);padding:4px 2px 6px}
+.res b{color:var(--blu);font-weight:900}
+.pc{display:grid;grid-template-columns:150px 1fr;gap:18px;background:#fff;border-radius:18px;padding:10px;cursor:pointer;transition:box-shadow .35s var(--ease),transform .35s var(--ease);outline:2px solid transparent}
+.pc:hover,.pc.on{box-shadow:0 14px 34px rgba(0,20,46,.12);transform:translateY(-2px)}
+.pc.on{outline-color:var(--oro)}
+.pc .ph{border-radius:12px;overflow:hidden;aspect-ratio:4/3.4;position:relative}
+.pc .ph img{width:100%;height:100%;object-fit:cover;transition:transform .8s var(--ease)}
+.pc:hover .ph img{transform:scale(1.07)}
+.lab{position:absolute;left:8px;top:8px;background:var(--blu);color:var(--oro);font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;padding:5px 8px;border-radius:6px}
+.pc .bd{padding:6px 6px 6px 0;display:flex;flex-direction:column;min-width:0}
+.pc .loc{font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:var(--blu-60)}
+.pc h3{font-size:19px;line-height:1.25;font-weight:800;margin-top:6px}
+.pc .meta{font-size:14px;color:var(--blu-60);margin-top:auto;display:flex;gap:14px;flex-wrap:wrap}
+.pc .pr{font-size:21px;font-weight:900;margin-top:8px}
+.empty{background:#fff;border-radius:18px;padding:30px;color:var(--blu-60)}
+.mapbox{position:relative;border-radius:24px;overflow:hidden;background:var(--blu-10)}
+#map{position:absolute;inset:0}
+.leaflet-container{font-family:var(--font);background:#E9EEF2}
+.leaflet-tile-pane{filter:grayscale(1) contrast(.88) brightness(1.06)}
+.mapbox:after{content:"";position:absolute;inset:0;z-index:250;pointer-events:none;background:rgba(128,171,201,.14);mix-blend-mode:multiply}
+.pin{background:var(--blu);color:#fff;font-weight:900;font-size:13px;padding:7px 11px;border-radius:999px;white-space:nowrap;box-shadow:0 6px 16px rgba(0,20,46,.3);transform:translate(-50%,-50%);display:inline-block;transition:background .25s,color .25s,transform .35s var(--ease);position:relative}
+.pin:after{content:"";position:absolute;left:50%;bottom:-5px;width:10px;height:10px;background:inherit;transform:translateX(-50%) rotate(45deg);z-index:-1}
+.pin.on{background:var(--oro);color:var(--blu);transform:translate(-50%,-50%) scale(1.15)}
+.leaflet-div-icon{background:none;border:0}
+.hn-pop .leaflet-popup-content-wrapper{border-radius:16px;padding:0;overflow:hidden;box-shadow:0 18px 40px rgba(0,20,46,.25)}
+.hn-pop .leaflet-popup-content{margin:0;width:240px!important}
+.hn-pop img{width:100%;height:130px;object-fit:cover}
+.hn-pop .pb{padding:12px 14px 14px;font-family:var(--font);color:var(--blu)}
+.hn-pop .pb b{display:block;font-size:18px;font-weight:900}
+.hn-pop .pb span{font-size:13px;color:var(--blu-60)}
+.mapnote{position:absolute;z-index:500;left:14px;bottom:14px;background:rgba(255,255,255,.94);border-radius:12px;padding:10px 14px;font-size:13px;display:flex;align-items:center;gap:10px;max-width:calc(100% - 28px)}
+.mapnote svg{flex:none}
+.vtog{display:none}
+
+/* EVIDENZA (scroll orizzontale) */
+.evid{background:var(--blu);color:#fff;overflow:hidden;position:relative}
+.evid .pinwrap{height:100vh;display:flex;flex-direction:column;justify-content:center;padding:90px 0 40px}
+.evid .pinwrap>.wrap{width:100%}
+.evid .eh{display:flex;justify-content:space-between;align-items:flex-end;gap:30px}
+.evid .eh a{font-weight:800;border-bottom:2px solid var(--oro);padding-bottom:3px;font-size:16px}
+.track{display:flex;gap:28px;margin-top:36px;padding-left:var(--gut);will-change:transform;width:max-content}
+.ec{width:clamp(260px,min(26vw,42vh),400px);flex:none;cursor:pointer}
+.ec .ph{aspect-ratio:4/5;border-radius:22px;overflow:hidden;position:relative}
+.ec .ph img{width:100%;height:115%;object-fit:cover;will-change:transform}
+.ec .pr{position:absolute;right:14px;top:14px;background:#fff;color:var(--blu);font-weight:900;font-size:16px;padding:7px 13px;border-radius:999px}
+.ec .loc{margin-top:18px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--oro);font-weight:800}
+.ec h3{font-size:24px;font-weight:800;margin-top:6px;line-height:1.2}
+.ec .meta{font-size:15px;color:var(--blu-40);margin-top:6px}
+.ec.more{display:flex;align-items:center;justify-content:center;aspect-ratio:4/5;border:1px solid rgba(217,197,132,.4);border-radius:22px;font-size:28px;font-weight:900;text-align:center;align-self:flex-start;transition:background .4s}
+.ec.more:hover{background:rgba(217,197,132,.1)}
+.ec.more span{display:block;font-size:15px;font-weight:600;color:var(--oro);margin-top:10px}
+.progress{height:2px;background:rgba(255,255,255,.12);margin-top:32px;position:relative}
+.progress i{position:absolute;inset:0;background:var(--oro);transform-origin:left;transform:scaleX(0)}
+
+/* TERRITORIO */
+.terr{padding:clamp(90px,12vw,160px) 0}
+.terr .intro{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:end}
+.terr .intro p{color:var(--blu-60);max-width:520px}
+.towns{margin-top:60px;border-top:1px solid var(--blu-10)}
+.town{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:30px;padding:22px 0;border-bottom:1px solid var(--blu-10);cursor:pointer;position:relative}
+.town h3{font-size:clamp(36px,6vw,92px);line-height:1;font-weight:900;letter-spacing:-.03em;transition:color .4s,transform .6s var(--ease)}
+.town:hover h3{color:var(--oro);transform:translateX(18px)}
+.town .n{font-size:15px;color:var(--blu-60);white-space:nowrap}
+.town .n b{color:var(--blu);font-size:22px;font-weight:900;margin-right:4px}
+.town .ar{width:56px;height:56px;border-radius:50%;border:1px solid var(--blu-20);display:grid;place-items:center;transition:all .4s var(--ease)}
+.town:hover .ar{background:var(--blu);border-color:var(--blu);color:var(--oro);transform:rotate(-45deg)}
+.peek{position:fixed;z-index:40;width:280px;aspect-ratio:4/3;border-radius:18px;overflow:hidden;pointer-events:none;opacity:0;transform:translate(-50%,-50%) scale(.8);transition:opacity .3s,transform .4s var(--ease);box-shadow:0 20px 50px rgba(0,20,46,.3)}
+.peek.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.peek img{width:100%;height:100%;object-fit:cover}
+
+/* METODO (carte impilate) */
+.metodo{padding:0 0 clamp(80px,10vw,140px)}
+.stack{margin-top:56px;position:relative}
+.mc{position:sticky;top:110px;min-height:420px;border-radius:32px;padding:clamp(28px,4vw,56px);display:grid;grid-template-columns:1fr 1.2fr;gap:40px;margin-bottom:28px;overflow:hidden;transform-origin:center top}
+.mc:nth-child(1){background:var(--blu);color:#fff}
+.mc:nth-child(2){background:var(--azzurro)}
+.mc:nth-child(3){background:var(--sabbia)}
+.mc .num{font-size:15px;font-weight:800;letter-spacing:.18em;opacity:.7}
+.mc h3{font-size:clamp(40px,5.4vw,80px);line-height:1;font-weight:900;letter-spacing:-.03em;margin-top:16px}
+.mc p{font-size:clamp(19px,1.7vw,25px);line-height:1.45;font-weight:300;align-self:end;max-width:560px}
+.mc .ph{border-radius:20px;overflow:hidden;align-self:stretch;min-height:200px}
+.mc .ph img{width:100%;height:100%;object-fit:cover}
+.mc .side{display:flex;flex-direction:column;gap:28px}
+
+/* FONDATORE */
+.fond{padding:clamp(60px,8vw,120px) 0;background:var(--oro-15)}
+.fond .g{display:grid;grid-template-columns:auto 1fr;gap:clamp(30px,6vw,100px);align-items:center}
+.fond .mk{width:clamp(120px,16vw,240px);will-change:transform}
+.fond blockquote{font-size:clamp(26px,3vw,44px);line-height:1.25;font-weight:300;letter-spacing:-.01em}
+.fond blockquote b{font-weight:900}
+.fond .who{margin-top:28px;font-size:16px}
+.fond .who b{font-weight:900;font-size:19px;display:block}
+.fond .who span{color:var(--blu-60)}
+
+/* VALUTA */
+.valuta{padding:clamp(70px,8vw,110px) 0}
+.vbox{background:var(--blu);color:#fff;border-radius:36px;padding:clamp(36px,6vw,88px);display:grid;grid-template-columns:1.3fr 1fr;gap:60px;position:relative;overflow:hidden}
+.vbox:after{content:"";position:absolute;right:-120px;bottom:-160px;width:520px;height:520px;background:url(assets/logo/HabitaNova_pittogramma_oro.svg) center/contain no-repeat;opacity:.08}
+.vbox h2{font-size:clamp(36px,4.6vw,66px);line-height:1.02;font-weight:900;letter-spacing:-.02em;margin-top:18px}
+.vbox p{color:var(--blu-20);margin-top:22px;max-width:520px}
+.vbox .acts{display:flex;gap:14px;flex-wrap:wrap;margin-top:36px}
+.vbox .btn-ghost{border:1px solid rgba(255,255,255,.3);color:#fff;background:none}
+.qr{background:rgba(255,255,255,.06);border:1px solid rgba(217,197,132,.3);border-radius:24px;padding:28px;display:flex;gap:24px;align-items:center;align-self:center;position:relative;z-index:1}
+.qr .code{width:110px;height:110px;flex:none;background:#fff;border-radius:12px;padding:10px}
+.qr h4{font-size:20px;font-weight:900}
+.qr p{font-size:15px;margin-top:8px}
+
+/* FOOTER */
+footer{background:var(--blu);color:#fff;padding:80px 0 40px}
+footer .g{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px}
+footer img{height:34px;width:auto}
+footer h5{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--oro);font-weight:800;margin-bottom:14px}
+footer p,footer li{font-size:15px;color:var(--blu-20);list-style:none;line-height:1.9}
+footer .pay{margin-top:18px;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--oro);font-weight:300}
+footer .bot{margin-top:60px;padding-top:24px;border-top:1px solid rgba(255,255,255,.12);display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:13px;color:var(--blu-40)}
+
+/* RESPONSIVE */
+@media (max-width:1100px){
+  .nav .links{display:none}.burger{display:grid}.nav .cta-top{display:none}
+  .board{grid-template-columns:1fr;height:auto}
+  .list{max-height:none;overflow:visible}
+  .mapbox{height:70vh}
+  .board.show-list .mapbox{display:none}.board.show-map .list{display:none}
+  .vtog{display:inline-flex;background:#fff;border-radius:999px;padding:4px;margin-top:20px}
+  .vtog button{border:0;background:none;padding:9px 18px;border-radius:999px;font-weight:700;font-size:15px;cursor:pointer}
+  .vtog button.on{background:var(--blu);color:#fff}
+  .fsel{margin-left:0}
+  .terr .intro{grid-template-columns:1fr;gap:20px}
+  .mc{grid-template-columns:1fr;top:90px}
+  .mc .ph{display:none}
+  .vbox{grid-template-columns:1fr}
+  footer .g{grid-template-columns:1fr 1fr}
+}
+@media (max-width:760px){
+  body{font-size:17px}
+  .hero{padding:8px}.hero .frame{border-radius:20px}
+  .count{display:none}
+  .search{flex-direction:column;padding:16px;gap:4px}
+  .search label{border-right:0;border-bottom:1px solid var(--blu-10);padding:8px 0}
+  .search .go{margin:10px 0 0;padding:16px;justify-content:center}
+  .hero .txt{top:110px}
+  .hero .kick{letter-spacing:.16em;font-size:12px}
+  .stats{grid-template-columns:1fr;gap:0}
+  .pc{grid-template-columns:110px 1fr;gap:14px}
+  .pc h3{font-size:17px}
+  .evid .pinwrap{height:auto;padding:90px 0 70px}
+  .track{overflow-x:auto;scroll-snap-type:x mandatory;width:auto;padding-right:var(--gut);scrollbar-width:none}
+  .ec{scroll-snap-align:start;width:78vw}
+  .progress{display:none}
+  .town{grid-template-columns:1fr auto;gap:14px}.town .ar{display:none}
+  .fond .g{grid-template-columns:1fr}
+  .qr{flex-direction:column;align-items:flex-start}
+  footer .g{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}.manifesto .big .w{opacity:1}}
+</style>
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <div class="wrap in">
+    <a href="#top" class="logo" aria-label="HabitaNova, home">
+      <img class="w" src="assets/logo/HabitaNova_orizzontale_bianco.svg" alt="HabitaNova">
+      <img class="b" src="assets/logo/HabitaNova_orizzontale_blu.svg" alt="" aria-hidden="true">
+    </a>
+    <nav class="links" aria-label="Principale">
+      <a href="#mappa">Immobili</a><a href="#valuta">Vendi casa</a><a href="#metodo">Chi siamo</a><a href="#contatti">Contatti</a>
+    </nav>
+    <a href="#valuta" class="btn btn-blu cta-top"><i></i>Valuta il tuo immobile</a>
+    <button class="burger" aria-label="Menu"><span></span></button>
+  </div>
+</header>
+
+<div class="mmenu" id="mmenu"><button class="x" aria-label="Chiudi">&#10005;</button><a href="#mappa">Immobili</a><a href="#valuta">Vendi casa</a><a href="#metodo">Chi siamo</a><a href="#contatti">Contatti</a><a href="#valuta" class="btn btn-oro"><i></i>Valuta il tuo immobile</a></div>
+
+<main id="top">
+<!-- HERO -->
+<section class="hero">
+  <div class="frame">
+    <div class="bg" id="heroBg"></div>
+    <div class="txt">
+      <div class="kick hr">Il tuo nuovo modo di abitare</div>
+      <h1><span class="line"><span>La casa giusta,</span></span><span class="line"><span>nel Sulcis</span></span><span class="line"><span>Iglesiente.</span></span></h1>
+      <p class="sub hr">Ti accompagniamo dalla prima visita al rogito, con chiarezza su ogni passaggio.</p>
+    </div>
+    <div class="count hr"><b id="heroCount">0</b>immobili disponibili</div>
+    <form class="search hr" id="heroSearch">
+      <label><b>Comune</b><select name="comune" id="sComune"><option value="">Tutti i comuni</option></select></label>
+      <label><b>Tipologia</b><select name="tipo" id="sTipo"><option value="">Tutte</option></select></label>
+      <label><b>Prezzo massimo</b><select name="prezzo" id="sPrezzo"><option value="">Qualsiasi</option><option>100000</option><option>150000</option><option>250000</option><option>400000</option></select></label>
+      <label><b>Camere</b><select name="camere" id="sCamere"><option value="">Qualsiasi</option><option value="1">1 o più</option><option value="2">2 o più</option><option value="3">3 o più</option><option value="4">4 o più</option></select></label>
+      <button class="btn btn-oro go" type="submit">Cerca sulla mappa →</button>
+    </form>
+  </div>
+</section>
+
+<!-- MANIFESTO -->
+<section class="manifesto">
+  <div class="wrap">
+    <div class="kick rv">La nostra visione</div>
+    <p class="big" id="manifesto">Trasformare l'intermediazione immobiliare in un <strong>atto di cura</strong> verso le persone e i territori: non vendiamo semplicemente metri quadri, ma costruiamo luoghi in cui le vite fioriscono, le comunità si rigenerano e la bellezza dell'abitare diventa un'eredità duratura.</p>
+    <div class="stats">
+      <div class="rv"><b><span class="cnt" data-to="20">0</span><sup>+</sup></b><span>anni di esperienza nel settore immobiliare</span></div>
+      <div class="rv"><b><span class="cnt" data-to="14" id="statImm">0</span></b><span>immobili in vendita in questo momento</span></div>
+      <div class="rv"><b><span class="cnt" data-to="8" id="statCom">0</span></b><span>comuni del Sulcis Iglesiente dove lavoriamo</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- MAPPA -->
+<section class="mappa" id="mappa">
+  <div class="wrap">
+    <div class="mhead">
+      <div><div class="kick rv">Cerca casa</div><h2 class="t">Tutti gli immobili, sulla mappa</h2></div>
+      <p class="rv">Scegli il comune e i filtri: la mappa e l'elenco si aggiornano insieme. Tocca un prezzo per aprire la scheda.</p>
+    </div>
+    <div class="filters rv" id="chips"></div>
+    <div class="fsel rv" style="margin-top:12px">
+      <select id="fTipo" aria-label="Tipologia"><option value="">Tutte le tipologie</option></select>
+      <select id="fPrezzo" aria-label="Prezzo massimo"><option value="">Qualsiasi prezzo</option><option value="100000">Fino a € 100.000</option><option value="150000">Fino a € 150.000</option><option value="250000">Fino a € 250.000</option><option value="400000">Fino a € 400.000</option></select>
+      <select id="fCamere" aria-label="Camere"><option value="">Camere: qualsiasi</option><option value="1">1 o più camere</option><option value="2">2 o più camere</option><option value="3">3 o più camere</option><option value="4">4 o più camere</option></select>
+      <select id="fOrd" aria-label="Ordina"><option value="">In evidenza</option><option value="asc">Prezzo crescente</option><option value="desc">Prezzo decrescente</option><option value="mq">Superficie</option></select>
+    </div>
+    <div class="vtog" role="tablist"><button class="on" data-v="list">Elenco</button><button data-v="map">Mappa</button></div>
+    <div class="board show-list rv" id="board">
+      <div class="list" id="list" data-lenis-prevent></div>
+      <div class="mapbox" data-lenis-prevent>
+        <div id="map"></div>
+        <div class="mapnote"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00142E" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM20 14v1M14 20h1M18 18h3v3"/></svg>Hai visto un cartello HabitaNova? Inquadra il QR code e arrivi dritto alla scheda.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EVIDENZA -->
+<section class="evid dark" id="evid">
+  <div class="pinwrap">
+    <div class="wrap eh">
+      <div><div class="kick">In evidenza</div><h2 class="t">Le case di questo mese</h2></div>
+      <a href="#mappa">Vedi tutti gli immobili</a>
+    </div>
+    <div class="track" id="track"></div>
+    <div class="wrap"><div class="progress"><i id="prog"></i></div></div>
+  </div>
+</section>
+
+<!-- TERRITORIO -->
+<section class="terr" id="territorio">
+  <div class="wrap">
+    <div class="intro">
+      <div><div class="kick rv">Il territorio</div><h2 class="t">Dove lavoriamo</h2></div>
+      <p class="rv">Siamo radicati nel Sulcis, con sede a Iglesias: un territorio a cui guardiamo con dedizione autentica, per valorizzarne le case, le comunità e il potenziale futuro.</p>
+    </div>
+    <div class="towns" id="towns"></div>
+  </div>
+  <div class="peek" id="peek"><img alt=""></div>
+</section>
+
+<!-- METODO -->
+<section class="metodo" id="metodo">
+  <div class="wrap">
+    <div class="kick rv">Come lavoriamo</div>
+    <h2 class="t">Al fianco di chi vende e di chi compra</h2>
+    <div class="stack">
+      <article class="mc"><div class="side"><div class="num">01</div><h3>Chiarezza</h3></div><p>Semplifichiamo la complessità di ogni passaggio della compravendita, dalla prima visita fino al rogito.</p></article>
+      <article class="mc"><div class="side"><div class="num">02</div><h3>Metodo</h3></div><p>Soluzioni concrete e consulenze mirate, per chi vende casa e per chi la cerca.</p></article>
+      <article class="mc"><div class="side"><div class="num">03</div><h3>Attenzione ai dettagli</h3></div><p>Un modo di fare immobiliare che non si accontenta dell'approssimazione: cura nel gesto, nell'ascolto e nella qualità del servizio.</p></article>
+    </div>
+  </div>
+</section>
+
+<!-- FONDATORE -->
+<section class="fond">
+  <div class="wrap g">
+    <img class="mk" id="mark" src="assets/logo/HabitaNova_pittogramma_oro.svg" alt="">
+    <div>
+      <blockquote class="rv">«Le relazioni autentiche sono il fondamento di ogni risultato, e dare il giusto valore al prossimo è la strada più vera e vincente, <b>anche quando non è la più semplice</b>.»</blockquote>
+      <div class="who rv"><b>Giuseppe Delussu</b><span>Fondatore di HabitaNova · oltre vent'anni nel settore immobiliare</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- VALUTA -->
+<section class="valuta" id="valuta">
+  <div class="wrap">
+    <div class="vbox rv">
+      <div>
+        <div class="kick">Vendi casa</div>
+        <h2>Quanto vale la tua casa?</h2>
+        <p>Ti diamo una valutazione con i numeri del mercato del Sulcis, poi decidi tu con calma. Ti seguiamo noi in ogni passaggio della vendita.</p>
+        <div class="acts"><a class="btn btn-oro" href="#contatti"><i></i>Richiedi la valutazione</a><a class="btn btn-ghost" href="tel:+390781381728">Chiama 0781 381728</a></div>
+      </div>
+      <div class="qr">
+        <svg class="code" viewBox="0 0 29 29" shape-rendering="crispEdges" id="qr"></svg>
+        <div><h4>Il QR sui nostri cartelli</h4><p>Ogni cartello Vendesi HabitaNova ha il suo codice: lo inquadri e vedi foto, prezzo e planimetria di quella casa.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer id="contatti">
+  <div class="wrap">
+    <div class="g">
+      <div><img src="assets/logo/HabitaNova_orizzontale_bianco.svg" alt="HabitaNova"><div class="pay">Il tuo nuovo modo di abitare</div></div>
+      <div><h5>Sede</h5><p>Via Mazzini 25<br>09016 Iglesias (SU)</p></div>
+      <div><h5>Contatti</h5><p>+39 0781 381728<br>habitanova25@gmail.com</p></div>
+      <div><h5>Zone</h5><ul><li>Iglesias</li><li>Carloforte · Calasetta</li><li>Sant'Antioco</li><li>Sulcis Iglesiente</li></ul></div>
+    </div>
+    <div class="bot"><span>© 2026 HabitaNova</span><span>Bozza · immobili, prezzi e posizioni sono di esempio · foto di riferimento Freepik</span></div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+<script>
+/* ---------- DATI DI ESEMPIO ---------- */
+const F='assets/foto/';
+const IMM=[
+ {id:1, t:'Appartamento nel centro storico', c:'Iglesias', tipo:'Appartamento', p:98000, mq:85, cam:2, bag:1, lat:39.3098, lng:8.5365, img:'c-sof2', lab:'Nuovo'},
+ {id:2, t:'Casa indipendente con cortile', c:'Iglesias', tipo:'Casa indipendente', p:165000, mq:140, cam:3, bag:2, lat:39.3152, lng:8.5296, img:'est-patio', lab:'Esclusiva', ev:1},
+ {id:3, t:'Appartamento con terrazzo', c:'Iglesias', tipo:'Appartamento', p:129000, mq:95, cam:2, bag:1, lat:39.3058, lng:8.5446, img:'est-balcone'},
+ {id:4, t:'Villa con vista sul Pan di Zucchero', c:'Iglesias', z:'Nebida', tipo:'Villa', p:390000, mq:210, cam:4, bag:3, lat:39.3075, lng:8.4235, img:'est-vista', lab:'Esclusiva', ev:1},
+ {id:5, t:'Casa nel centro storico', c:'Carloforte', tipo:'Casa indipendente', p:245000, mq:110, cam:3, bag:2, lat:39.1460, lng:8.3063, img:'est-vicolo', ev:1},
+ {id:6, t:'Appartamento sul lungomare', c:'Carloforte', tipo:'Appartamento', p:210000, mq:75, cam:2, bag:1, lat:39.1432, lng:8.3092, img:'int-pranzo', lab:'Nuovo'},
+ {id:7, t:'Villetta con giardino', c:'Calasetta', tipo:'Villa', p:230000, mq:120, cam:3, bag:2, lat:39.1082, lng:8.3722, img:'est-casa', ev:1},
+ {id:8, t:'Bilocale vicino alla spiaggia', c:'Calasetta', tipo:'Appartamento', p:119000, mq:55, cam:1, bag:1, lat:39.1048, lng:8.3676, img:'int-bianco'},
+ {id:9, t:'Casa su due livelli', c:"Sant'Antioco", tipo:'Casa indipendente', p:155000, mq:130, cam:3, bag:2, lat:39.0690, lng:8.4560, img:'est-porta', ev:1},
+ {id:10,t:'Appartamento ristrutturato', c:"Sant'Antioco", tipo:'Appartamento', p:112000, mq:80, cam:2, bag:1, lat:39.0716, lng:8.4518, img:'int-legno'},
+ {id:11,t:'Appartamento luminoso', c:'Carbonia', tipo:'Appartamento', p:79000, mq:90, cam:3, bag:1, lat:39.1668, lng:8.5212, img:'int-finestre'},
+ {id:12,t:'Casa indipendente in paese', c:'Gonnesa', tipo:'Casa indipendente', p:135000, mq:150, cam:4, bag:2, lat:39.2655, lng:8.4715, img:'est-sole'},
+ {id:13,t:'Attico con terrazza sul porto', c:'Portoscuso', tipo:'Appartamento', p:185000, mq:100, cam:3, bag:2, lat:39.2073, lng:8.3812, img:'est-balaustra', lab:'Nuovo', ev:1},
+ {id:14,t:'Rustico da ristrutturare', c:'Fluminimaggiore', tipo:'Rustico', p:69000, mq:160, cam:3, bag:1, lat:39.4372, lng:8.4978, img:'int-ombra'}
+];
+const TOWNS=[
+ {c:'Iglesias', img:'est-patio'},{c:'Carloforte', img:'est-vicolo'},{c:'Calasetta', img:'est-casa'},{c:"Sant'Antioco", img:'est-porta'},{c:'Altri comuni del Sulcis', img:'est-sole', other:1}
+];
+const MAIN=['Iglesias','Carloforte','Calasetta',"Sant'Antioco"];
+const eur=n=>'€ '+n.toLocaleString('it-IT');
+const short=n=>n>=1e6?'€ '+(n/1e6).toLocaleString('it-IT',{maximumFractionDigits:1})+' mln':'€ '+Math.round(n/1000)+'k';
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- STATO FILTRI ---------- */
+const st={c:'',tipo:'',p:'',cam:'',ord:''};
+const comuni=[...new Set(IMM.map(i=>i.c))];
+const tipi=[...new Set(IMM.map(i=>i.tipo))];
+$('#heroCount').textContent=IMM.length;
+$('#statImm').dataset.to=IMM.length; $('#statCom').dataset.to=comuni.length+1; /* +Nebida come frazione */
+comuni.forEach(c=>{$('#sComune').add(new Option(c,c))});
+tipi.forEach(t=>{$('#sTipo').add(new Option(t,t));$('#fTipo').add(new Option(t,t))});
+$$('#sPrezzo option').forEach(o=>{if(o.value)o.textContent='Fino a '+eur(+o.value)});
+
+function chips(){
+  const opts=[['','Tutti'],...MAIN.map(c=>[c,c]),['altri','Altri comuni']];
+  $('#chips').innerHTML=opts.map(([v,l])=>{
+    const n=IMM.filter(i=>!v||(v==='altri'?!MAIN.includes(i.c):i.c===v)).length;
+    return `<button class="chip${st.c===v?' on':''}" data-c="${v}">${l}<em>${n}</em></button>`}).join('');
+  $$('#chips .chip').forEach(b=>b.onclick=()=>{st.c=b.dataset.c;apply(true)});
+}
+function filtered(){
+  let r=IMM.filter(i=>(!st.c||(st.c==='altri'?!MAIN.includes(i.c):i.c===st.c))&&(!st.tipo||i.tipo===st.tipo)&&(!st.p||i.p<=+st.p)&&(!st.cam||i.cam>=+st.cam));
+  if(st.ord==='asc')r.sort((a,b)=>a.p-b.p); else if(st.ord==='desc')r.sort((a,b)=>b.p-a.p); else if(st.ord==='mq')r.sort((a,b)=>b.mq-a.mq); else r.sort((a,b)=>(b.ev||0)-(a.ev||0));
+  return r;
+}
+
+/* ---------- MAPPA ---------- */
+const map=L.map('map',{zoomControl:false,scrollWheelZoom:false,attributionControl:true}).setView([39.22,8.45],10);
+L.control.zoom({position:'topright'}).addTo(map);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap'}).addTo(map);
+map.on('click',()=>map.scrollWheelZoom.enable()); map.on('mouseout',()=>map.scrollWheelZoom.disable());
+const marks={};
+IMM.forEach(i=>{
+  const m=L.marker([i.lat,i.lng],{icon:L.divIcon({className:'',html:`<span class="pin" data-id="${i.id}">${short(i.p)}</span>`,iconSize:[0,0]}),riseOnHover:true});
+  m.bindPopup(`<img src="${F+i.img}.jpg" alt=""><div class="pb"><span>${i.z?i.z+' · ':''}${i.c}</span><b>${eur(i.p)}</b>${i.t}<br><span>${i.mq} m² · ${i.cam} camere · ${i.bag} bagni</span></div>`,{className:'hn-pop',closeButton:false,offset:[0,-14]});
+  m.on('click',()=>select(i.id,'map')); m.on('mouseover',()=>hl(i.id,true)); m.on('mouseout',()=>hl(i.id,false));
+  marks[i.id]=m;
+});
+function hl(id,on){
+  const p=document.querySelector(`.pin[data-id="${id}"]`); if(p)p.classList.toggle('on',on||sel===id);
+  const c=document.querySelector(`.pc[data-id="${id}"]`); if(c)c.classList.toggle('on',on||sel===id);
+  if(marks[id]&&on)marks[id].setZIndexOffset(1000); else if(marks[id])marks[id].setZIndexOffset(0);
+}
+let sel=null;
+function select(id,from){
+  const prev=sel; sel=id; if(prev)hl(prev,false); hl(id,true);
+  const i=IMM.find(x=>x.id===id);
+  if(from!=='map'){map.flyTo([i.lat,i.lng],14,{duration:1.1}); setTimeout(()=>marks[id].openPopup(),900); if(innerWidth<=1100)setView('map');}
+  else{const c=document.querySelector(`.pc[data-id="${id}"]`); if(c&&innerWidth>1100)$('#list').scrollTo({top:c.offsetTop-$('#list').offsetTop-40,behavior:'smooth'});}
+}
+
+/* ---------- ELENCO ---------- */
+function card(i){return `<article class="pc" data-id="${i.id}"><div class="ph"><img src="${F+i.img}.jpg" alt="${i.t}" loading="lazy">${i.lab?`<span class="lab">${i.lab}</span>`:''}</div><div class="bd"><div class="loc">${i.z?i.z+' · ':''}${i.c}</div><h3>${i.t}</h3><div class="pr">${eur(i.p)}</div><div class="meta"><span>${i.mq} m²</span><span>${i.cam} ${i.cam>1?'camere':'camera'}</span><span>${i.bag} ${i.bag>1?'bagni':'bagno'}</span></div></div></article>`}
+function apply(fly){
+  chips();
+  const r=filtered(), ids=new Set(r.map(i=>i.id));
+  $('#list').innerHTML=`<div class="res"><b>${r.length}</b> ${r.length===1?'immobile':'immobili'}${st.c?' · '+(st.c==='altri'?'altri comuni':st.c):''}</div>`+(r.length?r.map(card).join(''):`<div class="empty">Nessun immobile con questi filtri. Prova ad allargare il prezzo o il numero di camere.</div>`);
+  $$('#list .pc').forEach(el=>{const id=+el.dataset.id;el.onclick=()=>select(id);el.onmouseenter=()=>hl(id,true);el.onmouseleave=()=>hl(id,false)});
+  IMM.forEach(i=>{ids.has(i.id)?marks[i.id].addTo(map):marks[i.id].remove()});
+  if(!RM&&window.gsap)gsap.from('#list .pc',{y:24,opacity:0,duration:.6,stagger:.05,ease:'power3.out'});
+  if(fly&&r.length){const b=L.latLngBounds(r.map(i=>[i.lat,i.lng]));map.flyToBounds(b,{padding:[70,70],maxZoom:14,duration:1.2})}
+}
+[['#fTipo','tipo'],['#fPrezzo','p'],['#fCamere','cam'],['#fOrd','ord']].forEach(([s,k])=>$(s).onchange=e=>{st[k]=e.target.value;apply(true)});
+function setView(v){$('#board').className='board rv show-'+v;$$('.vtog button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));if(v==='map')setTimeout(()=>map.invalidateSize(),50)}
+$$('.vtog button').forEach(b=>b.onclick=()=>setView(b.dataset.v));
+function goMap(){ if(window.lenis)lenis.scrollTo('#mappa',{offset:-20,duration:1.4}); else $('#mappa').scrollIntoView({behavior:'smooth'}) }
+$('#heroSearch').onsubmit=e=>{e.preventDefault();
+  st.c=$('#sComune').value; st.tipo=$('#sTipo').value; st.p=$('#sPrezzo').value; st.cam=$('#sCamere').value;
+  $('#fTipo').value=st.tipo;$('#fPrezzo').value=st.p;$('#fCamere').value=st.cam;
+  goMap(); setTimeout(()=>apply(true),700);
+};
+apply(false);
+const fitAll=()=>{map.invalidateSize();map.fitBounds(L.latLngBounds(filtered().map(i=>[i.lat,i.lng])),{padding:[60,60],maxZoom:14,animate:false})};
+fitAll(); addEventListener('load',fitAll); addEventListener('resize',()=>map.invalidateSize());
+new IntersectionObserver((e,o)=>{if(e[0].isIntersecting){fitAll();o.disconnect()}}).observe(document.getElementById('map'));
+
+/* ---------- EVIDENZA ---------- */
+$('#track').innerHTML=IMM.filter(i=>i.ev).map(i=>`<article class="ec" data-id="${i.id}"><div class="ph"><img src="${F+i.img}.jpg" alt="${i.t}" loading="lazy"><span class="pr">${eur(i.p)}</span>${i.lab?`<span class="lab">${i.lab}</span>`:''}</div><div class="loc">${i.z?i.z+' · ':''}${i.c}</div><h3>${i.t}</h3><div class="meta">${i.mq} m² · ${i.cam} camere · ${i.bag} bagni</div></article>`).join('')+`<a class="ec more" href="#mappa">Tutti gli immobili<span>${IMM.length} case sulla mappa →</span></a>`;
+$$('#track .ec[data-id]').forEach(el=>el.onclick=()=>{goMap();setTimeout(()=>select(+el.dataset.id),900)});
+
+/* ---------- TERRITORIO ---------- */
+$('#towns').innerHTML=TOWNS.map(t=>{const n=IMM.filter(i=>t.other?!MAIN.includes(i.c):i.c===t.c).length;
+  return `<div class="town" data-c="${t.other?'altri':t.c}" data-img="${F+t.img}.jpg"><h3>${t.c}</h3><div class="n"><b>${n}</b>${n===1?'immobile':'immobili'}</div><div class="ar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div></div>`}).join('');
+const peek=$('#peek');
+$$('.town').forEach(t=>{
+  t.onmouseenter=()=>{peek.querySelector('img').src=t.dataset.img;peek.classList.add('on')};
+  t.onmouseleave=()=>peek.classList.remove('on');
+  t.onmousemove=e=>{peek.style.left=e.clientX+'px';peek.style.top=e.clientY+'px'};
+  t.onclick=()=>{st.c=t.dataset.c;goMap();setTimeout(()=>apply(true),800)};
+});
+
+/* ---------- QR decorativo ---------- */
+(function(){let s='';const f=(x,y)=>`<rect x="${x}" y="${y}" width="1" height="1"/>`;let seed=7;const rnd=()=>(seed=(seed*9301+49297)%233280)/233280;
+ const finder=(ox,oy)=>{for(let y=0;y<7;y++)for(let x=0;x<7;x++){if(x===0||y===0||x===6||y===6||(x>1&&x<5&&y>1&&y<5))s+=f(ox+x,oy+y)}};
+ finder(0,0);finder(22,0);finder(0,22);
+ for(let y=0;y<29;y++)for(let x=0;x<29;x++){const inF=(x<8&&y<8)||(x>20&&y<8)||(x<8&&y>20);if(!inF&&rnd()>.52)s+=f(x,y)}
+ $('#qr').innerHTML=`<g fill="#00142E">${s}</g>`})();
+
+/* ---------- NAV ---------- */
+$('.burger').onclick=()=>$('#mmenu').classList.add('on');
+$$('#mmenu a,#mmenu .x').forEach(a=>a.addEventListener('click',()=>$('#mmenu').classList.remove('on')));
+let lastY=0;
+function onScroll(y){const n=$('#nav');n.classList.toggle('solid',y>innerHeight*.75);n.classList.toggle('hide',y>lastY&&y>innerHeight);lastY=y}
+addEventListener('scroll',()=>onScroll(scrollY),{passive:true});
+
+/* ---------- ANIMAZIONI ---------- */
+// manifesto: parole separate
+(function(){const el=$('#manifesto');const walk=n=>{[...n.childNodes].forEach(c=>{if(c.nodeType===3){const fr=document.createDocumentFragment();c.textContent.split(/(\s+)/).forEach(w=>{if(!w)return;if(/^\s+$/.test(w))fr.append(w);else{const s=document.createElement('span');s.className='w';s.textContent=w;fr.append(s)}});c.replaceWith(fr)}else walk(c)})};walk(el)})();
+
+if(!RM){
+  gsap.registerPlugin(ScrollTrigger);
+  window.lenis=new Lenis({duration:1.15,easing:t=>Math.min(1,1.001-Math.pow(2,-10*t))});
+  lenis.on('scroll',e=>{ScrollTrigger.update();onScroll(e.scroll)});
+  gsap.ticker.add(t=>lenis.raf(t*1000)); gsap.ticker.lagSmoothing(0);
+  $$('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{const h=a.getAttribute('href');if(h.length>1&&$(h)){e.preventDefault();lenis.scrollTo(h,{offset:h==='#top'?0:-20,duration:1.4})}}));
+
+  // ingresso hero
+  const tl=gsap.timeline({defaults:{ease:'expo.out'}});
+  tl.from('.hero .frame',{clipPath:'inset(8% 6% 8% 6% round 40px)',duration:1.6})
+    .from('#heroBg',{scale:1.25,duration:2.2},0)
+    .from('.hero h1 .line>span',{yPercent:110,duration:1.2,stagger:.1},.35)
+    .from('.hero .hr',{y:30,opacity:0,duration:1,stagger:.08},.6)
+    .from('#nav',{y:-30,opacity:0,duration:1},.8);
+  gsap.to('#heroCount',{textContent:IMM.length,snap:{textContent:1},duration:1.6,delay:.8,ease:'power2.out',startAt:{textContent:0}});
+  // hero in scroll
+  gsap.to('#heroBg',{yPercent:18,scale:1.08,ease:'none',scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:true}});
+  gsap.to('.hero .txt',{yPercent:-25,opacity:0,ease:'none',scrollTrigger:{trigger:'.hero',start:'10% top',end:'70% top',scrub:true}});
+  gsap.to('.hero .frame',{borderRadius:48,scale:.94,ease:'none',scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:true}});
+
+  // manifesto parola per parola
+  gsap.to('#manifesto .w',{opacity:1,stagger:.1,ease:'none',scrollTrigger:{trigger:'#manifesto',start:'top 80%',end:'bottom 45%',scrub:true}});
+  // contatori
+  $$('.cnt').forEach(c=>{const to=+c.dataset.to;c.textContent=0;ScrollTrigger.create({trigger:c,start:'top 88%',once:true,onEnter:()=>gsap.to(c,{textContent:to,snap:{textContent:1},duration:1.6,ease:'power2.out'})})});
+
+  // reveal generico
+  $$('.rv').forEach(el=>gsap.from(el,{y:50,opacity:0,duration:1.1,ease:'expo.out',scrollTrigger:{trigger:el,start:'top 88%'}}));
+  // titoli: maschera
+  $$('h2.t').forEach(h=>gsap.from(h,{clipPath:'inset(0 0 100% 0)',y:30,duration:1.2,ease:'expo.out',scrollTrigger:{trigger:h,start:'top 88%'}}));
+
+  // mappa: sezione sale con bordo arrotondato
+  gsap.from('.mappa',{borderRadius:'0px 0px 0 0',scrollTrigger:{trigger:'.mappa',start:'top bottom',end:'top 40%',scrub:true}});
+
+  const mm=gsap.matchMedia();
+  mm.add('(min-width:761px)',()=>{
+    // evidenza: scorrimento orizzontale fissato
+    const track=$('#track');
+    const dist=()=>track.scrollWidth-innerWidth+parseInt(getComputedStyle(document.documentElement).getPropertyValue('--gut'))+40;
+    const tw=gsap.to(track,{x:()=>-dist(),ease:'none',scrollTrigger:{trigger:'#evid',start:'top top',end:()=>'+='+dist(),pin:true,scrub:1,invalidateOnRefresh:true,onUpdate:s=>gsap.set('#prog',{scaleX:s.progress})}});
+    $$('#track .ec .ph img').forEach(img=>gsap.fromTo(img,{yPercent:-8},{yPercent:0,ease:'none',scrollTrigger:{trigger:img.closest('.ec'),containerAnimation:tw,start:'left right',end:'right left',scrub:true}}));
+    // territorio: righe che entrano da lati alterni
+    $$('.town').forEach((t,k)=>gsap.from(t.querySelector('h3'),{xPercent:k%2?12:-12,opacity:0,ease:'none',scrollTrigger:{trigger:t,start:'top 95%',end:'top 60%',scrub:true}}));
+    // metodo: carte che si impilano e rimpiccioliscono
+    const cards=$$('.mc');
+    cards.forEach((c,k)=>{if(k===cards.length-1)return;gsap.to(c,{scale:.92-(cards.length-2-k)*.03,opacity:.6,ease:'none',scrollTrigger:{trigger:cards[k+1],start:'top bottom',end:'top 110px',scrub:true}})});
+    // pittogramma: rotazione leggera e parallasse
+    gsap.fromTo('#mark',{rotate:-12,y:60},{rotate:0,y:-40,ease:'none',scrollTrigger:{trigger:'.fond',start:'top bottom',end:'bottom top',scrub:true}});
+  });
+  // box valuta
+  gsap.from('.vbox',{scale:.94,ease:'none',scrollTrigger:{trigger:'.vbox',start:'top bottom',end:'top 50%',scrub:true}});
+  addEventListener('load',()=>ScrollTrigger.refresh());
+}else{
+  $$('.cnt').forEach(c=>c.textContent=c.dataset.to);
+}
+</script>
+</body>
+</html>
