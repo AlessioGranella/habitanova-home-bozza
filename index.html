@@ -43,6 +43,9 @@ h2.t{font-size:clamp(34px,4.6vw,64px);line-height:1.04;font-weight:900;letter-sp
 
 /* NAV */
 .nav{position:fixed;inset:0 0 auto;z-index:50;transition:background .4s,box-shadow .4s,transform .5s var(--ease)}
+@keyframes navIn{from{opacity:0}to{opacity:1}}
+.nav:before{content:"";position:absolute;inset:0 0 -40px;z-index:-1;pointer-events:none;background:linear-gradient(rgba(0,20,46,.5),rgba(0,20,46,0));transition:opacity .4s}
+.nav.solid:before{opacity:0}
 .nav .in{height:84px;display:flex;align-items:center;justify-content:space-between;gap:24px}
 .nav .logo{position:relative;height:30px;width:172px}
 .nav .logo img{position:absolute;inset:0;height:100%;width:auto;transition:opacity .4s}
@@ -554,7 +557,7 @@ $$('.town').forEach(t=>{
 $('.burger').onclick=()=>$('#mmenu').classList.add('on');
 $$('#mmenu a,#mmenu .x').forEach(a=>a.addEventListener('click',()=>$('#mmenu').classList.remove('on')));
 let lastY=0;
-function onScroll(y){const n=$('#nav');n.classList.toggle('solid',y>innerHeight*.75);n.classList.toggle('hide',y>lastY&&y>innerHeight);lastY=y}
+function onScroll(y){if(y===lastY)return;const n=$("#nav");n.classList.toggle('solid',y>innerHeight*.75);n.classList.toggle('hide',y>lastY&&y>innerHeight);lastY=y}
 addEventListener('scroll',()=>onScroll(scrollY),{passive:true});
 
 /* ---------- ANIMAZIONI ---------- */
@@ -564,7 +567,7 @@ addEventListener('scroll',()=>onScroll(scrollY),{passive:true});
 if(!RM){
   gsap.registerPlugin(ScrollTrigger);
   window.lenis=new Lenis({duration:1.15,easing:t=>Math.min(1,1.001-Math.pow(2,-10*t))});
-  lenis.on('scroll',e=>{ScrollTrigger.update();onScroll(e.scroll)});
+  lenis.on("scroll",()=>{ScrollTrigger.update();onScroll(scrollY)});
   gsap.ticker.add(t=>lenis.raf(t*1000)); gsap.ticker.lagSmoothing(0);
   $$('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{const h=a.getAttribute('href');if(h.length>1&&$(h)){e.preventDefault();lenis.scrollTo(h,{offset:h==='#top'?0:-20,duration:1.4})}}));
 
@@ -574,7 +577,7 @@ if(!RM){
     .from('#heroBg',{scale:1.25,duration:2.2},0)
     .from('.hero h1 .line>span',{yPercent:110,duration:1.2,stagger:.1},.35)
     .from('.hero .hr',{y:30,opacity:0,duration:1,stagger:.08},.6)
-    .from('#nav',{y:-30,opacity:0,duration:1},.8);
+    ;
   gsap.to('#heroCount',{textContent:IMM.length,snap:{textContent:1},duration:1.6,delay:.8,ease:'power2.out',startAt:{textContent:0}});
   // hero in scroll
   gsap.to('#heroBg',{yPercent:18,scale:1.08,ease:'none',scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:true}});
